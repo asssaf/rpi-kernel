@@ -14,9 +14,9 @@ WORKDIR /linux-${KERNEL_VERSION}
 ARG CROSS_COMPILE
 
 # create a .config file
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make defconfig
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make tinyconfig
 
-# Use the kvm_guest config as the base defconfig, which is suitable for qemu
+# Use the kvm_guest config as the base config, which is suitable for qemu
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make kvm_guest.config
 
 ADD extra.config extra.config
