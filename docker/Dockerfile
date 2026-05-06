@@ -8,11 +8,13 @@ ARG KERNEL_VERSION
 ENV KERNEL_FAMILY="${KERNEL_VERSION/.*/}.x"
 
 WORKDIR /linux-${KERNEL_VERSION}
+ARG KERNEL_SOURCES_URL
 RUN curl -sL "${KERNEL_SOURCES_URL}" | tar -xvJ
 
 ARG CROSS_COMPILE
 
 # create a .config file
+ARG KERNEL_CONFIG_URL
 RUN curl -sL "${KERNEL_CONFIG_URL}" | xzcat > .config
 
 # Use the kvm_guest config as the base defconfig, which is suitable for qemu
