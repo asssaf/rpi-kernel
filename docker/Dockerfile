@@ -8,12 +8,12 @@ ARG KERNEL_VERSION
 ENV KERNEL_FAMILY="${KERNEL_VERSION/.*/}.x"
 
 WORKDIR /linux-${KERNEL_VERSION}
-RUN curl -sL http://tinycorelinux.net/16.x/aarch64/release/src/kernel/rpi-linux-${KERNEL_VERSION}.tar.xz | tar -xvJ
+RUN curl -sL "${KERNEL_SOURCES_URL}" | tar -xvJ
 
 ARG CROSS_COMPILE
 
 # create a .config file
-RUN curl -sL http://tinycorelinux.net/16.x/aarch64/release/src/kernel/${KERNEL_VERSION}-piCore-v8_.config.xz | xzcat > .config
+RUN curl -sL "${KERNEL_CONFIG_URL}" | xzcat > .config
 
 # Use the kvm_guest config as the base defconfig, which is suitable for qemu
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make kvm_guest.config
