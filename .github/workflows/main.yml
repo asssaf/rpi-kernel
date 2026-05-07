@@ -7,6 +7,14 @@ on:
         description: Kernel version
         type: string
         default: 6.12.25
+      KERNEL_SOURCES_URL:
+        description: Kernel sources URL (tar.xz)
+        type: string
+        default: http://tinycorelinux.net/16.x/aarch64/release/src/kernel/rpi-linux-6.12.25.tar.xz
+      KERNEL_CONFIG_URL:
+        description: Kernel config URL (xz)
+        type: string
+        default: http://tinycorelinux.net/16.x/aarch64/release/src/kernel/6.12.25-piCore-v8_.config.xz 
       TAG:
         description: Create a new tag
         type: string
@@ -19,7 +27,8 @@ on:
 env:
   KERNEL_VERSION: "${{ github.event.inputs.KERNEL_VERSION }}"
   TAG: "${{ github.event.inputs.TAG }}"
-
+  KERNEL_SOURCES_URL: "${{ github.event.inputs.KERNEL_SOURCES_URL }}"
+  KERNEL_CONFIG_URL: "${{ github.event.inputs.KERNEL_CONFIG_URL }}"
 
 jobs:
   build-kernel-qemu:
@@ -61,6 +70,8 @@ jobs:
           target: kernel
           build-args: |
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            KERNEL_SOURCES_URL=${{ env.KERNEL_SOURCES_URL }}
+            KERNEL_CONFIG_URL=${{ env.KERNEL_CONFIG_URL }}
             ARCH=${{ matrix.build.arch }}
             CROSS_COMPILE=${{ matrix.build.crosscompile }}
           push: ${{ github.event.inputs.PUSH }}

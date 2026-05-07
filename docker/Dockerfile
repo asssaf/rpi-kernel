@@ -7,14 +7,15 @@ RUN apt install -y curl fakeroot git kernel-wedge quilt ccache flex bison libssl
 ARG KERNEL_VERSION
 ENV KERNEL_FAMILY="${KERNEL_VERSION/.*/}.x"
 
-RUN curl -sL https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_FAMILY}/linux-${KERNEL_VERSION}.tar.xz | tar -xvJ
-
 WORKDIR /linux-${KERNEL_VERSION}
+ARG KERNEL_SOURCES_URL
+RUN curl -sL "${KERNEL_SOURCES_URL}" | tar -xvJ
 
 ARG CROSS_COMPILE
 
 # create a .config file
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make defconfig
+ARG KERNEL_CONFIG_URL
+RUN curl -sL "${KERNEL_CONFIG_URL}" | xzcat > .config
 
 # Use the kvm_guest config as the base defconfig, which is suitable for qemu
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make kvm_guest.config
@@ -22,6 +23,8 @@ RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make kvm_guest.config
 ADD extra.config extra.config
 
 RUN scripts/kconfig/merge_config.sh -m -r .config extra.config
+
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make olddefconfig
 
 # ensure dependencies are met
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make oldconfig
