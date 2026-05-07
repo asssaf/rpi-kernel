@@ -66,4 +66,4 @@ FROM scratch AS modules
 ARG KERNEL_VERSION
 
 COPY --from=build-modules /lib/modules /lib/modules
-COPY --from=build linux-${KERNEL_VERSION}/Module.symvers /Module.symvers-${KERNEL_VERSION}
+COPY --from=build-modules linux-${KERNEL_VERSION}/Module.symvers /Module.symvers-${KERNEL_VERSION}

@@ -14,12 +14,17 @@ on:
       KERNEL_CONFIG_URL:
         description: Kernel config URL (xz)
         type: string
-        default: http://tinycorelinux.net/16.x/aarch64/release/src/kernel/6.12.25-piCore-v8_.config.xz 
+        default: http://tinycorelinux.net/16.x/aarch64/release/src/kernel/6.12.25-piCore-v8_.config.xz
       TAG:
         description: Create a new tag
         type: string
+        default: 6.12.25-picore16-v8
       PUSH:
         description: Push the image
+        type: boolean
+        default: false
+      MODULES:
+        description: Build modules
         type: boolean
         default: false
 
@@ -86,3 +91,38 @@ jobs:
         with:
           name: kernel
           path: "${{github.workspace}}/artifacts/kernel"
+
+      - name: Docker meta modules
+        id: meta-modules
+        uses: docker/metadata-action@v5
+        if: ${{ github.event.inputs.MODULES == 'true' }}
+        with:
+          images: ghcr.io/asssaf/rpi-kernel-modules
+          tags: "type=raw,value=${{ env.TAG }},priority=2000"
+
+      - name: output modules
+        uses: docker/build-push-action@v6
+        if: ${{ github.event.inputs.MODULES == 'true' }}
+        with:
+          file: docker/Dockerfile
+          platforms: "${{matrix.build.platform}}"
+          target: modules
+          build-args: |
+            KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            KERNEL_SOURCES_URL=${{ env.KERNEL_SOURCES_URL }}
+            KERNEL_CONFIG_URL=${{ env.KERNEL_CONFIG_URL }}
+            ARCH=${{ matrix.build.arch }}
+            CROSS_COMPILE=${{ matrix.build.crosscompile }}
+          push: ${{ github.event.inputs.PUSH }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          outputs: "type=local,dest=${{github.workspace}}/artifacts/modules"
+
+      - name: upload-artifacts modules
+        uses: actions/upload-artifact@v4
+        if: ${{ github.event.inputs.MODULES == 'true' }}
+        with:
+          name: modules
+          path: "${{github.workspace}}/artifacts/modules"
