@@ -48,7 +48,7 @@ ARG KERNEL_VERSION
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules modules_install
 
 RUN apt install -y kmod
-RUN depmod -a ${KERNEL_VERSION}
+RUN depmod -a ${KERNEL_VERSION}-piCore-v8
 
 
 FROM scratch AS kernel
