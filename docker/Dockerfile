@@ -24,6 +24,8 @@ ADD extra.config extra.config
 
 RUN scripts/kconfig/merge_config.sh -m -r .config extra.config
 
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make olddefconfig
+
 # ensure dependencies are met
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make oldconfig
 
