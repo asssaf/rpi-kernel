@@ -22,12 +22,7 @@ RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make kvm_guest.config
 
 ADD extra.config extra.config
 
-RUN scripts/kconfig/merge_config.sh -m -r -y .config extra.config
-
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make olddefconfig
-
-# ensure dependencies are met
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make oldconfig
+RUN scripts/kconfig/merge_config.sh -r -y .config extra.config
 
 
 FROM deps AS build
