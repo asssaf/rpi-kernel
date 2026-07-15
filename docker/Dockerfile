@@ -5,11 +5,11 @@ RUN apt update
 RUN apt install -y curl fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-${ARCH} python3
 
 ARG KERNEL_VERSION
-ENV KERNEL_FAMILY="${KERNEL_VERSION/.*/}.x"
+ENV KERNEL_RPI_BRANCH="rpi-${KERNEL_VERSION%.*}.y"
 
-RUN curl -sL https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_FAMILY}/linux-${KERNEL_VERSION}.tar.xz | tar -xvJ
+RUN git clone --depth=1 --branch $KERNEL_RPI_BRANCH https://github.com/raspberrypi/linux
 
-WORKDIR /linux-${KERNEL_VERSION}
+WORKDIR /linux
 
 ARG CROSS_COMPILE
 ARG DEFCONFIG
@@ -54,9 +54,9 @@ FROM scratch AS kernel
 ARG ARCH
 ARG KERNEL_VERSION
 
-COPY --from=build linux-${KERNEL_VERSION}/arch/${ARCH}/boot/Image /Image-${KERNEL_VERSION}
-COPY --from=build linux-${KERNEL_VERSION}/.config /config-${KERNEL_VERSION}
-COPY --from=build linux-${KERNEL_VERSION}/System.map /System.map-${KERNEL_VERSION}
+COPY --from=build linux/arch/${ARCH}/boot/Image /Image-${KERNEL_VERSION}
+COPY --from=build linux/.config /config-${KERNEL_VERSION}
+COPY --from=build linux/System.map /System.map-${KERNEL_VERSION}
 
 
 FROM scratch AS modules
@@ -64,4 +64,4 @@ FROM scratch AS modules
 ARG KERNEL_VERSION
 
 COPY --from=build-modules /lib/modules /lib/modules
-COPY --from=build-modules linux-${KERNEL_VERSION}/Module.symvers /Module.symvers-${KERNEL_VERSION}
+COPY --from=build-modules linux/Module.symvers /Module.symvers-${KERNEL_VERSION}
