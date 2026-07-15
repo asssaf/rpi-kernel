@@ -12,9 +12,10 @@ RUN curl -sL https://cdn.kernel.org/pub/linux/kernel/v${KERNEL_FAMILY}/linux-${K
 WORKDIR /linux-${KERNEL_VERSION}
 
 ARG CROSS_COMPILE
+ARG DEFCONFIG
 
 # create a .config file
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make defconfig
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make $DEFCONFIG
 
 # Use the kvm_guest config as the base defconfig, which is suitable for qemu
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make kvm_guest.config
