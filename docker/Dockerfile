@@ -40,13 +40,13 @@ RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make Image -j8
 FROM build AS build-modules
 
 ARG ARCH=ARCH
-ARG KERNEL_VERSION
 
 # Build the modules
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules modules_install
 
 RUN apt install -y kmod
-RUN depmod -a ${KERNEL_VERSION}
+ARG KERNEL_VERSION
+RUN LOCAL_VERSION=$(awk -F "=" '/CONFIG_LOCALVERSION/ { gsub(/"/, ""); print $2 }' .config); depmod -a ${KERNEL_VERSION}${LOCAL_VERSION}
 
 
 FROM scratch AS kernel
