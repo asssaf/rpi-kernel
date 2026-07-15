@@ -7,7 +7,8 @@ RUN apt install -y curl fakeroot git kernel-wedge quilt ccache flex bison libssl
 ARG KERNEL_VERSION
 ENV KERNEL_RPI_BRANCH="rpi-${KERNEL_VERSION%.*}.y"
 
-RUN git clone --depth=1 --branch $KERNEL_RPI_BRANCH https://github.com/raspberrypi/linux
+RUN mkdir /linux
+RUN curl -sSL https://api.github.com/repos/raspberrypi/linux/tarball/${KERNEL_RPI_BRANCH} | tar --strip-components=1 -C linux -xz
 
 WORKDIR /linux
 
