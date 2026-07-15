@@ -2,7 +2,7 @@ FROM debian:trixie AS deps
 
 ARG ARCH
 RUN apt update
-RUN apt install -y curl fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-${ARCH}
+RUN apt install -y curl fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-${ARCH} python3
 
 ARG KERNEL_VERSION
 ENV KERNEL_FAMILY="${KERNEL_VERSION/.*/}.x"
