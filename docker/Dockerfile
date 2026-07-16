@@ -35,7 +35,7 @@ ARG ARCH
 ARG CROSSCOMPILE
 
 # Build the kernel
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make Image -j8
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make Image -j$(nproc)
 
 
 FROM build AS build-modules
@@ -43,7 +43,8 @@ FROM build AS build-modules
 ARG ARCH=ARCH
 
 # Build the modules
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules modules_install
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules -j$(nproc)
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules_install
 
 RUN apt install -y kmod
 ARG KERNEL_VERSION
