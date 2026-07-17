@@ -3,7 +3,7 @@
 : ${ARCH:=arm64}
 : ${CROSS_COMPILE:=/bin/aarch64-linux-gnu-}
 : ${KERNEL_VERSION:=6.18.38}
-: ${DEFCONFIG:=bcm2712_defconfig}
+: ${DEFCONFIG:=bcm2711_defconfig}
 : ${TARGET=kernel}
 : ${OUTPUT_TAR:=""}
 : ${OUTPUT_LOCAL:=""}

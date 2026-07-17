@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
        build:
-          - { arch: arm64, platform: linux/arm64/v8, crosscompile: /bin/aarch64-linux-gnu-, defconfig: bcm2712_defconfig }
+          - { arch: arm64, platform: linux/arm64/v8, crosscompile: /bin/aarch64-linux-gnu-, defconfig: bcm2711_defconfig }
 
     permissions:
       contents: read
