@@ -122,3 +122,23 @@ jobs:
         with:
           name: modules
           path: "${{github.workspace}}/artifacts/modules"
+
+      - name: test
+        uses: docker/build-push-action@v6
+        if: ${{ github.event.inputs.MODULES == 'true' }}
+        with:
+          file: docker/Dockerfile
+          platforms: "${{matrix.build.platform}}"
+          target: test
+          build-args: |
+            KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            KERNEL_SOURCES_URL=${{ env.KERNEL_SOURCES_URL }}
+            KERNEL_CONFIG_URL=${{ env.KERNEL_CONFIG_URL }}
+            ARCH=${{ matrix.build.arch }}
+            DEFCONFIG=${{ matrix.build.defconfig }}
+            CROSS_COMPILE=${{ matrix.build.crosscompile }}
+          push: ${{ github.event.inputs.PUSH }}
+          tags: ${{ steps.meta_modules.outputs.tags }}
+          labels: ${{ steps.meta_modules.outputs.labels }}
+          cache-from: type=gha
+          cache-to: ""  # don't write to cache

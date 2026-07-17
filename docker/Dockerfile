@@ -1,3 +1,7 @@
+ARG KERNEL_STAGE=kernel
+ARG MODULES_STAGE=modules
+
+
 FROM debian:trixie AS deps
 
 ARG ARCH
@@ -67,3 +71,30 @@ ARG KERNEL_VERSION
 
 COPY --from=build-modules /lib/modules /lib/modules
 COPY --from=build-modules linux/Module.symvers /Module.symvers-${KERNEL_VERSION}
+
+
+FROM --platform=linux/arm64/v8 ${KERNEL_STAGE} AS kernel-stage
+FROM --platform=linux/arm64/v8 ${MODULES_STAGE} AS modules-stage
+FROM --platform=linux/amd64 ghcr.io/asssaf/vcore:aarch64 AS vcore
+FROM --platform=linux/amd64 ghcr.io/asssaf/vcore-extra:aarch64 AS vcore-extra
+
+FROM debian:trixie AS test
+
+RUN apt update
+
+RUN apt install -y qemu-system-arm qemu-efi-aarch64 qemu-utils cpio
+RUN apt install -y sshpass
+
+COPY scripts/run.sh /
+
+COPY --from=kernel-stage /Image* /Image
+RUN mkdir /initramfs
+COPY --from=vcore / /initramfs/
+COPY --from=vcore-extra / /initramfs/
+COPY --from=modules-stage /* /initramfs/lib
+
+RUN cd /initramfs && find . -print0 | cpio --null -ov -H newc | gzip > /initramfs.cpio.gz
+
+RUN \
+  KERNEL=/Image INITRD="/initramfs.cpio.gz" /run.sh & \
+  until sshpass -p "password" ssh -o StrictHostKeychecking=no -p 2223 user@127.0.0.1 sudo poweroff; do sleep 5; done; \
