@@ -1,5 +1,5 @@
 name: build
-run-name: build ref:${{ github.ref_name }} kernel:${{ inputs.KERNEL_VERSION }} tag:${{ inputs.TAG }} push:${{ inputs.PUSH }} modules:${{ inputs.MODULES }}
+run-name: build ref:${{ github.ref_name }} kernel:${{ inputs.KERNEL_VERSION }} kernel-commit:${{ inputs.KERNEL_COMMIT }} tag:${{ inputs.TAG }} push:${{ inputs.PUSH }} modules:${{ inputs.MODULES }}
 
 on:
   workflow_dispatch:
@@ -7,11 +7,15 @@ on:
       KERNEL_VERSION:
         description: Kernel version
         type: string
-        default: 6.12.25
+        default: 6.18.39
+      KERNEL_COMMIT:
+        description: Kernel commit
+        type: string
+        default: stable_20260724
       TAG:
         description: Create a new tag
         type: string
-        default: 6.12.25-default
+        default: 6.18.39-rpi
       PUSH:
         description: Push the image
         type: boolean
@@ -23,6 +27,7 @@ on:
 
 env:
   KERNEL_VERSION: "${{ github.event.inputs.KERNEL_VERSION }}"
+  KERNEL_COMMIT: "${{ github.event.inputs.KERNEL_COMMIT }}"
   TAG: "${{ github.event.inputs.TAG }}"
 
 
@@ -69,6 +74,7 @@ jobs:
           target: kernel
           build-args: |
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            KERNEL_COMMIT=${{ env.KERNEL_COMMIT }}
             KERNEL_SOURCES_URL=${{ env.KERNEL_SOURCES_URL }}
             KERNEL_CONFIG_URL=${{ env.KERNEL_CONFIG_URL }}
             ARCH=${{ matrix.build.arch }}
@@ -104,6 +110,7 @@ jobs:
           target: modules
           build-args: |
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            KERNEL_COMMIT=${{ env.KERNEL_COMMIT }}
             KERNEL_SOURCES_URL=${{ env.KERNEL_SOURCES_URL }}
             KERNEL_CONFIG_URL=${{ env.KERNEL_CONFIG_URL }}
             ARCH=${{ matrix.build.arch }}

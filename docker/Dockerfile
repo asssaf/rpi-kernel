@@ -5,10 +5,10 @@ RUN apt update
 RUN apt install -y curl fakeroot git kernel-wedge quilt ccache flex bison libssl-dev dh-exec rsync libelf-dev bc crossbuild-essential-${ARCH} python3
 
 ARG KERNEL_VERSION
-ENV KERNEL_RPI_BRANCH="rpi-${KERNEL_VERSION%.*}.y"
+ARG KERNEL_COMMIT
 
 RUN mkdir /linux
-RUN curl -sSL https://api.github.com/repos/raspberrypi/linux/tarball/${KERNEL_RPI_BRANCH} | tar --strip-components=1 -C linux -xz
+RUN curl -sSL https://api.github.com/repos/raspberrypi/linux/tarball/${KERNEL_COMMIT} | tar --strip-components=1 -C linux -xz
 
 WORKDIR /linux
 

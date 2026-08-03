@@ -2,7 +2,8 @@
 
 : ${ARCH:=arm64}
 : ${CROSS_COMPILE:=/bin/aarch64-linux-gnu-}
-: ${KERNEL_VERSION:=6.18.38}
+: ${KERNEL_VERSION:=6.18.39}
+: ${KERNEL_COMMIT:=stable_20260724}
 : ${DEFCONFIG:=bcm2711_defconfig}
 : ${TARGET=kernel}
 : ${OUTPUT_TAR:=""}
@@ -12,6 +13,7 @@ docker build \
 	--build-arg "ARCH=${ARCH}" \
 	--build-arg "CROSS_COMPILE=${CROSS_COMPILE}" \
 	--build-arg "KERNEL_VERSION=${KERNEL_VERSION}" \
+	--build-arg "KERNEL_COMMIT=${KERNEL_COMMIT}" \
 	--build-arg "DEFCONFIG=${DEFCONFIG}" \
 	-f docker/Dockerfile \
 	--target "${TARGET}" \
