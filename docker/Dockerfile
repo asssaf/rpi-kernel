@@ -44,11 +44,9 @@ ARG ARCH=ARCH
 
 # Build the modules
 RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules -j$(nproc)
-RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules_install
 
 RUN apt install -y kmod
-ARG KERNEL_VERSION
-RUN LOCAL_VERSION=$(awk -F "=" '/CONFIG_LOCALVERSION/ { gsub(/"/, ""); print $2 }' .config); depmod -a ${KERNEL_VERSION}${LOCAL_VERSION}
+RUN ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE make modules_install
 
 
 FROM scratch AS kernel
